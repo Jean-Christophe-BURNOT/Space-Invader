@@ -6,7 +6,7 @@ Created on Tue Dec 14 07:41:27 2021
 @author: raphael.guzelian
 """
 
-from tkinter import *
+from tkinter import*
 
 
 # ----------------------------------------------------------------------------        
@@ -173,14 +173,4 @@ class PageJeu(ComportementFenetre):
         
 # ----------------------------------------------------------------------------              
 # fonction principale 
-def main(): 
-    
-    root = Tk()
-    app = accueil(root)
-    root.mainloop()
-    
-    
-# lancement du programme 
 
-if __name__ == '__main__':
-    main()
