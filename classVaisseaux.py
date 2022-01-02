@@ -5,23 +5,23 @@ Jean-Christophe BURNOT
 classe principale pour les ennemis
 """
 from tkinter import*
-
+from GUI import PageJeu
 
 
 
 #class qui gère le joueur; affichage + actions
-class joueur:
+class joueur(PageJeu):
     
-    def __init__(self,):
-        
+    def __init__(self,master):
         self.master = master
-        ComportementFenetre.__init__(self, master)
+        PageJeu.__init__(self, master)
         self.background = PhotoImage(file = "./Images/space-bg.png", master=self.master)
         self.canvas = Canvas(self.master, width = 100, height = 100,bg="black", borderwidth=-10)
         self.canvas.create_image(0, 0, image = self.background, anchor = "nw")
         self.canvas.pack(fill = "both", expand = True)
         
         #Permet de faire apparaître le vaisseau principal.
+        self.master = master
         with open('vaisseau.txt',"r") as fichier: #on prend l'image du vaisseau choisi
             filecontent= fichier.readlines()
             fichier.close()
@@ -50,7 +50,9 @@ class joueur:
 """
 #class qui gère les ennemis; affichage + actions
 class ennemis:
+    ennemis = 0
     def __init__(self,):
+        ennemis+=1
         
     def déplacement(self):
         

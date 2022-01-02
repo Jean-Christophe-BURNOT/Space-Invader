@@ -7,7 +7,6 @@ Created on Fri Dec 31 15:51:08 2021
 Ce programme est l'interface graphique du Space-Invaders
 """
 from tkinter import *
-from classVaisseaux import joueur
 
 
 
@@ -21,7 +20,7 @@ class ComportementFenetre():
         self.fullScreenState = False
         self.master.bind("<F2>", self.toggleFullScreen)
         self.master.bind("<Escape>", self.quitFullScreen)
-        self.master.title('Space Invaders')
+        self.master.title('Space-Invaders')
         self.master.config(cursor = "dotbox")
         
     # mode plein écran
@@ -80,6 +79,7 @@ class accueil(ComportementFenetre):
 
 
 
+#Classe qui s'occupe de la page de choix du vaisseaux
 class Personnalisation(ComportementFenetre):
     
     def __init__(self,master):
@@ -136,6 +136,8 @@ class Personnalisation(ComportementFenetre):
         else:
             self.master.destroy()
             self.master = Tk()
+            #génère la page suivante et la stocke dans "self.app"
+            
             self.app = PageJeu(self.master)
             self.master.mainloop()
 
@@ -151,14 +153,14 @@ class Personnalisation(ComportementFenetre):
 
 #Classe qui s'occupe de la page de jeu
 class PageJeu(ComportementFenetre):
-    
-    def __init__(self,master):
+   
+    #permet de lancer le mécanisme de jeu
+    def __init__(self, master):
         self.master = master
         ComportementFenetre.__init__(self, master)
         self.background = PhotoImage(file = "./Images/space-bg.png", master=self.master)
         self.canvas = Canvas(self.master, width = 100, height = 100,bg="black", borderwidth=-10)
         self.canvas.create_image(0, 0, image = self.background, anchor = "nw")
         self.canvas.pack(fill = "both", expand = True)
-        #permet de lancer le mécanisme de jeu
-        joueur()
+        joueur(self.master)
         

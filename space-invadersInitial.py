@@ -306,18 +306,6 @@ class PageJeu(ComportementFenetre):
 
         self.listeIlots=[]
         self.ilots()
-
-
-
-    # def move_up(self, event):
-    #     self.canvas.move(self.pion, 0, -10)
-    #     if self.canvas.coords(self.pion)[1] < 650:
-    #         self.canvas.move(self.pion, 0, 20)
- 
-    # def move_down(self, event):
-    #     self.canvas.move(self.pion, 0, 10)
-    #     if self.canvas.coords(self.pion)[1] > self.master.winfo_screenheight():
-    #         self.canvas.move(self.pion, 0, -20)
          
     def move_right(self, event):
         self.canvas.move(self.pion, 10, 0)
@@ -358,9 +346,10 @@ class PageJeu(ComportementFenetre):
                             self.loadedGun=False
                             self.master.bind("<space>",self.shoot)
                 self.master.after(100,self.mvtBalle)
+    #classe qui fait apparaître les ennemis
+    def ennemis(self):
         
-
-
+    #classe qui fait apparaîtres les ilots
     def ilots(self):
         #bloc 1
         for i in range(1,8):
