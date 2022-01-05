@@ -306,11 +306,13 @@ class PageJeu(ComportementFenetre):
         self.vie=3
         self.listeIlots=[]
         self.listeEnnemis=[]
+        self.listeTirsEnnemis = []
         self.ilots()
         
         self.x = 5
         self.y = 0
         self.ennemis()
+        
          
     def move_right(self, event):
         self.canvas.move(self.pion, 10, 0)
@@ -379,15 +381,16 @@ class PageJeu(ComportementFenetre):
         if a==1:
             self.balleEn=self.canvas.create_rectangle(self.canvas.coords(self.en1)[0],self.canvas.coords(self.en1)[1]+30,
                                                     self.canvas.coords(self.en1)[0],self.canvas.coords(self.en1)[1]-5,
-                                                    outline="yellow",
-                                                    fill="yellow")
+                                                    outline="yellow", fill="yellow")
+            self.listeTirsEnnemis.append(self.balleEn)
             self.mvtBalleEnnemis()
             self.canvas.after(100,self.shootEnnemis)
         else:
             self.canvas.after(100,self.shootEnnemis)
             
     def mvtBalleEnnemis(self):
-            self.canvas.move(self.balleEn, 0, 20)
+            for val in self.listeTirsEnnemis:
+                self.canvas.move(val, 0, 20)
             self.canvas.after(100,self.mvtBalleEnnemis)
         
         

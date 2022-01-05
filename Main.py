@@ -8,7 +8,7 @@ Ce programme est le lanceur du Space-Invaders
 """
 
 from tkinter import*
-from GUI import ComportementFenetre, accueil,  PageJeu
+from "achanger" import ComportementFenetre, accueil,  PageJeu
 
 root = Tk()
 app = accueil(root)
