@@ -7,6 +7,8 @@ Created on Tue Dec 14 07:41:27 2021
 """
 
 from tkinter import *
+import random
+
 
 
 # ----------------------------------------------------------------------------        
@@ -335,7 +337,7 @@ class PageJeu(ComportementFenetre):
         if self.loadedGun==True: 
             if self.canvas.coords(self.balle)[1] < 0: #si la balle sort de l'écran
                 self.canvas.delete(self.balle)
-                self.master.bind("<space>", self.shoot) #on peut retirer
+                self.master.bind("<space>", self.shoot) #on peut denouveau tirer
                 self.loadedGun=False
             else:
                 self.canvas.move(self.balle, 0, -30)
@@ -352,14 +354,12 @@ class PageJeu(ComportementFenetre):
                 
     #classe qui fait apparaître les ennemis
     def ennemis(self):
-        self.ennemi1= PhotoImage(file = "Images/alien1.png", master=self.master).subsample(8)
-        self.ennemi2= PhotoImage(file = "Images/alien2.png", master=self.master).subsample(8)
+        self.ennemi1= PhotoImage(file = "Images/alien1.png", master=self.master).subsample(2)
+        self.ennemi2= PhotoImage(file = "Images/alien2.png", master=self.master).subsample(2)
         self.en1 = self.canvas.create_image(self.master.winfo_screenwidth()/2,156,image=self.ennemi2)
-        #self.en2 = self.canvas.create_image(self.master.winfo_screenwidth()/3,156,image=self.ennemi2)
-        #self.en3 = self.canvas.create_image(self.master.winfo_screenwidth()*2*1/3,156,image=self.ennemi2)
-        #self.ensemble = [self.en1, self.en2, self.en3]
-        #Portion de code qui permet d'avoir les extremites de la vague
+        
         self.mouvement()
+        self.shootEnnemis()
         
         
     def mouvement(self):
@@ -368,11 +368,30 @@ class PageJeu(ComportementFenetre):
         x, y = self.canvas.coords(self.en1)
         if x > self.master.winfo_screenwidth():
             self.x=-5
-            self.y=15
+            self.y=50
         if x < 0:
             self.x=5
-            self.y=15 
+            self.y=50
         self.canvas.after(10,self.mouvement)
+    
+    def shootEnnemis(self):
+        a=random.randint(1,5)
+        if a==1:
+            self.balleEn=self.canvas.create_rectangle(self.canvas.coords(self.en1)[0],self.canvas.coords(self.en1)[1]+30,
+                                                    self.canvas.coords(self.en1)[0],self.canvas.coords(self.en1)[1]-5,
+                                                    outline="yellow",
+                                                    fill="yellow")
+            self.mvtBalleEnnemis()
+            self.canvas.after(100,self.shootEnnemis)
+        else:
+            self.canvas.after(100,self.shootEnnemis)
+            
+    def mvtBalleEnnemis(self):
+            self.canvas.move(self.balleEn, 0, 20)
+            self.canvas.after(100,self.mvtBalleEnnemis)
+        
+        
+                
             
         
         
