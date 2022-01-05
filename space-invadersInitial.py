@@ -297,15 +297,18 @@ class PageJeu(ComportementFenetre):
                                command=self.pause)
         
         self.btnPause.place(x=1400,y=40)
-        # self.master.bind("<Up>", self.move_up)
-        # self.master.bind("<Down>", self.move_down)
         self.master.bind("<Right>", self.move_right)
         self.master.bind("<Left>", self.move_left)
         self.master.bind("<space>", self.shoot)
         
-
+        self.vie=3
         self.listeIlots=[]
+        self.listeEnnemis=[]
         self.ilots()
+        
+        self.x = 5
+        self.y = 0
+        self.ennemis()
          
     def move_right(self, event):
         self.canvas.move(self.pion, 10, 0)
@@ -346,8 +349,59 @@ class PageJeu(ComportementFenetre):
                             self.loadedGun=False
                             self.master.bind("<space>",self.shoot)
                 self.master.after(100,self.mvtBalle)
+                
     #classe qui fait apparaître les ennemis
     def ennemis(self):
+        self.ennemi1= PhotoImage(file = "Images/alien1.png", master=self.master).subsample(8)
+        self.ennemi2= PhotoImage(file = "Images/alien2.png", master=self.master).subsample(8)
+        self.en1 = self.canvas.create_image(self.master.winfo_screenwidth()/2,156,image=self.ennemi2)
+        #self.en2 = self.canvas.create_image(self.master.winfo_screenwidth()/3,156,image=self.ennemi2)
+        #self.en3 = self.canvas.create_image(self.master.winfo_screenwidth()*2*1/3,156,image=self.ennemi2)
+        #self.ensemble = [self.en1, self.en2, self.en3]
+        #Portion de code qui permet d'avoir les extremites de la vague
+        self.mouvement()
+        
+        
+    def mouvement(self):
+        self.canvas.move(self.en1, self.x, self.y)
+        self.y=0
+        x, y = self.canvas.coords(self.en1)
+        if x > self.master.winfo_screenwidth():
+            self.x=-5
+            self.y=15
+        if x < 0:
+            self.x=5
+            self.y=15 
+        self.canvas.after(10,self.mouvement)
+            
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
     #classe qui fait apparaîtres les ilots
     def ilots(self):
