@@ -137,9 +137,7 @@ class Personnalisation(ComportementFenetre):
                              borderwidth = -10)
         
         
-        
-        
-        self.canvas.create_image(0, -200, 
+        self.canvas.create_image(0, -200,
                                  image = self.background,
                                  anchor="nw")
         
@@ -283,7 +281,7 @@ class Ennemi():
         
         self.vie = 1000
         self.myVie = Label(self.master, 
-                           text = "Vie restante : 3",
+                           text = "Vie restante : "+str(self.vie),
                            font = ("Matura MT Script Capitals", 25),
                            bg = "black", 
                            fg = "white")
@@ -293,13 +291,20 @@ class Ennemi():
         
 
     def ennemis(self):
-        # self.ennemi1 = PhotoImage(file = "Images/alien1.png", master = self.master).subsample(2)
+        self.enBonus = PhotoImage(file = "Images/alien1.png", master = self.master).subsample(4)
+        self.ennemiBonus = self.canvas.create_image(450,100,image = self.enBonus)
+        listeEnnemi.append(self.ennemiBonus)
+        self.mvtBonus(self.ennemiBonus)
+        
         self.ennemi2 = PhotoImage(file = "Images/alien2.png", master = self.master).subsample(3)
+        
+        
         for i in range(1,6):
             self.en = self.canvas.create_image(450+i*130,156,image = self.ennemi2)
             listeEnnemi.append(self.en)
-            
-        self.positionVague()
+        #fais les appels adéquats pour les methodes 
+        
+        
         self.mouvement(10, 0)
         self.shootEnnemis()
             
@@ -314,13 +319,21 @@ class Ennemi():
     def positionVague(self):
         posVagueD = 0
         posVagueG = self.master.winfo_screenwidth()
-        for ennemi in listeEnnemi:
+        for ennemi in listeEnnemi[1:]:
             if self.canvas.coords(ennemi)[0] <= posVagueG:
                 posVagueG = self.canvas.coords(ennemi)[0]
             if self.canvas.coords(ennemi)[0] >= posVagueD:
                 posVagueD=self.canvas.coords(ennemi)[0]
                 
         return(posVagueG, posVagueD)
+    
+    
+    
+    def mvtBonus(self,bonus):
+        self.canvas.move(self.ennemiBonus,10,0)
+        if self.canvas.coords(bonus)[0] >= 1920:
+            self.canvas.coords(bonus,0,100)
+        self.master.after(20,self.mvtBonus,self.ennemiBonus)
       
     
     #Méthode qui permet de déplacer la vague d'ennemis
@@ -329,56 +342,38 @@ class Ennemi():
         limiteD = self.master.winfo_screenwidth()
         limiteG = 0
         
-        for ennemi in listeEnnemi:
+        for ennemi in listeEnnemi[1:]:
              
             self.canvas.move(ennemi, x, y)
+            self.collision()
             posVagueG, posVagueD = self.positionVague()
             
             if posVagueD >= limiteD:
-                for ennemi in listeEnnemi:
+                for ennemi in listeEnnemi[1:]:
                     self.canvas.move(ennemi,0,5)
-                x = -x
+                    self.collision()
+                
+                x = -x  
             
             if posVagueG <= limiteG:
-                for ennemi in listeEnnemi:
+                for ennemi in listeEnnemi[1:]:
                     self.canvas.move(ennemi,0,5)
-                x=-x
+                    self.collision()
+                
+                x = -x
         
-        self.canvas.after(30, self.mouvement, x, y)
-        
-        # self.canvas.move(vaisseauEn, self.x, self.y)
-        # self.collision()
-        # self.y = 0
-        # x , y = self.canvas.coords(vaisseauEn)
-        # if x > self.master.winfo_screenwidth():
-        #     self.x = -5
-        #     self.y = 50
-        # if x < 0:
-        #     self.x = 5
-        #     self.y = 50
-        # self.canvas.after(30,self.mouvement,vaisseauEn)
-        
-        # for ennemi in listeEnnemi:
-        #     self.canvas.move(ennemi, self.x, self.y)
-        #     self.collision()
-        #     self.y = 0
-        #     x , y = self.canvas.coords(ennemi)
-        #     if x > self.master.winfo_screenwidth():
-        #         self.x = -5
-        #         self.y = 50
-        #     if x < 0:
-        #         self.x = 5
-        #         self.y = 50
-        # self.canvas.after(30,self.mouvement)
-        
-        
-        
+        self.master.after(30, self.mouvement, x, y)
     """
-    les tirs s'amplifient
+    Quand un ennemi meurt, les autres arrêtent de bouger (essayer double héritage)
+    Les ennemis se superposent
+    File et pile (trouver ou les mettre, idée : l'utiliser pour la fréq d'apparition de l'ennemi bonus)
+    sélection double vaisseau (message ne s'affiche pas sur linux)
+    bonnes pratiques
+    dossier final
     """
     
     def shootEnnemis(self): 
-        for ennemi in listeEnnemi:
+        for ennemi in listeEnnemi[1:]:
             a=random.randint(1,10)
             if a == 1:
                 self.balleEn = self.canvas.create_rectangle(self.canvas.coords(ennemi)[0],self.canvas.coords(ennemi)[1]+20,
@@ -397,7 +392,7 @@ class Ennemi():
             
             #si la balle sort de l'écran
             if self.canvas.coords(balleEn)[1] > self.master.winfo_screenheight(): 
-                    self.canvas.delete()
+                    self.canvas.delete(balleEn) 
                     self.listeTirsEnnemis.remove(balleEn)
                     
             else:
@@ -426,10 +421,12 @@ class Ennemi():
            
                 self.canvas.after(100,self.mvtBalleEnnemis,balleEn)
                 
+
+                
                 
                 
     def collision(self):
-        for ennemi in listeEnnemi:
+        for ennemi in listeEnnemi[1:]:
             x,y = self.canvas.coords(ennemi)
             limit=50
             if abs(self.canvas.coords(ennemi)[0] - self.canvas.coords(self.pion)[0]) < limit and abs(self.canvas.coords(ennemi)[1] - self.canvas.coords(self.pion)[1]) < limit:
@@ -451,12 +448,14 @@ class Ennemi():
             
 # ----------------------------------------------------------------------------                    
 # Page de jeu
-class PageJeu(ComportementFenetre):
+class PageJeu(ComportementFenetre, Ennemi):
     
     def __init__(self, master, type_vaisseau):
         
 
         self.master = master
+        
+        #fait l'héritage des classes
         
         ComportementFenetre.__init__(self, master)
 
@@ -519,25 +518,25 @@ class PageJeu(ComportementFenetre):
         
         self.score = 0
         self.myScore = Label(self.master, 
-                         text = "Score : 0         ",
+                         text = "Score : "+str(self.score),
                          font = ("Matura MT Script Capitals", 25),
                          bg = "black", 
                          fg = "white")
         self.myScore.place(x = 50,y = 30)
         
-        self.master.bind("<Right>", self.move_right)
-        self.master.bind("<Left>", self.move_left)
+        self.master.bind("<Right>", self.moveRight)
+        self.master.bind("<Left>", self.moveLeft)
         self.master.bind("<space>", self.shoot)
         
         
          
-    def move_right(self, event):
+    def moveRight(self, event):
         self.canvas.move(self.pion, 10, 0)
         if self.canvas.coords(self.pion)[0] > self.master.winfo_screenwidth():
             self.canvas.move(self.pion, -20, 0)
         
        
-    def move_left(self, event):
+    def moveLeft(self, event):
         self.canvas.move(self.pion, -10, 0)
         if self.canvas.coords(self.pion)[0] < -20:
             self.canvas.move(self.pion, 20, 0)
@@ -579,13 +578,20 @@ class PageJeu(ComportementFenetre):
                             self.master.bind("<space>",self.shoot)
                     
                     #si un ennemi est dans la liste des elem touchés, on le supprime
-                    for ennemi in listeEnnemi: 
+                    for ennemi in listeEnnemi[1:]:
                         if elem == ennemi:
                             self.canvas.delete(ennemi)
                             self.canvas.delete(self.balle)
                             self.score += 20
                             self.myScore.config(text="Score : "+str(self.score))
-                            self.master.bind("<space>",self.shoot)
+                            self.master.bind("<space>",self.shoot)  
+                        
+                    if elem == listeEnnemi[0]:
+                        self.canvas.delete(elem)
+                        self.canvas.delete(self.balle)
+                        self.score += 100
+                        self.myScore.config(text="Score : "+str(self.score))
+                        self.master.bind( "<space>",self.shoot)  
                             
                 self.master.after(100,self.mvtBalle)
 
