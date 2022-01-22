@@ -218,17 +218,6 @@ class Personnalisation(ComportementFenetre):
         
     # aller à la page de jeu
     def suivant(self):
-        #on récupère le vaisseau choisi
-        if self.myShip1.get() == 1:
-            type_vaisseau = 1
-            pagejeu = PageJeu(self.master, type_vaisseau)
-        if self.myShip2.get() == 1:
-            type_vaisseau = 2
-            pagejeu = PageJeu(self.master, type_vaisseau)
-        if self.myShip3.get() == 1:
-            type_vaisseau = 3
-            pagejeu = PageJeu(self.master, type_vaisseau)
-            
         
         #sécurité de sélection de vaisseau
         l=[]
@@ -246,7 +235,19 @@ class Personnalisation(ComportementFenetre):
             messagebox.showinfo("INFORMATION", 
                                 "Veuillez sélectionner un seul vaisseau")
             
-        else:
+        #on récupère le vaisseau choisi
+        if self.myShip1.get() == 1 and len(l) == 1:
+            type_vaisseau = 1
+            pagejeu = PageJeu(self.master, type_vaisseau)
+        if self.myShip2.get() == 1 and len(l) == 1:
+            type_vaisseau = 2
+            pagejeu = PageJeu(self.master, type_vaisseau)
+        if self.myShip3.get() == 1 and len(l) == 1:
+            type_vaisseau = 3
+            pagejeu = PageJeu(self.master, type_vaisseau)
+        
+
+        if len(l) == 1:
             self.master.destroy()
             self.master = Tk()
             self.app = PageJeu(self.master, type_vaisseau)
@@ -286,25 +287,24 @@ class Ennemi():
                            bg = "black", 
                            fg = "white")
         
-        self.myVie.place(x = 50,y = 80)
+        self.myVie.place(x = 0,y = 0)
         
         
 
     def ennemis(self):
         self.enBonus = PhotoImage(file = "Images/alien1.png", master = self.master).subsample(4)
-        self.ennemiBonus = self.canvas.create_image(450,100,image = self.enBonus)
+        self.ennemiBonus = self.canvas.create_image(0,100,image = self.enBonus)
         listeEnnemi.append(self.ennemiBonus)
         self.mvtBonus(self.ennemiBonus)
         
         self.ennemi2 = PhotoImage(file = "Images/alien2.png", master = self.master).subsample(3)
         
         
-        for i in range(1,6):
-            self.en = self.canvas.create_image(450+i*130,156,image = self.ennemi2)
+        for i in range(1,5) :
+            self.en = self.canvas.create_image(0+i*130,165,image = self.ennemi2)
             listeEnnemi.append(self.en)
-        #fais les appels adéquats pour les methodes 
-        
-        
+            
+        #fais les appels adéquats pour les methodes     
         self.mouvement(10, 0)
         self.shootEnnemis()
             
@@ -316,24 +316,27 @@ class Ennemi():
         
     #Méthode qui prend les ennemis générés 
     #et calcule l'extrémité de notre vague d'ennemi       
-    def positionVague(self):
-        posVagueD = 0
-        posVagueG = self.master.winfo_screenwidth()
-        for ennemi in listeEnnemi[1:]:
-            if self.canvas.coords(ennemi)[0] <= posVagueG:
-                posVagueG = self.canvas.coords(ennemi)[0]
-            if self.canvas.coords(ennemi)[0] >= posVagueD:
-                posVagueD=self.canvas.coords(ennemi)[0]
+    # def positionVague(self):
+    #     # posVagueD = 0
+    #     # posVagueG = self.master.winfo_screenwidth()
+    #     # for ennemi in listeEnnemi[1:]:
+    #     #     if self.canvas.coords(ennemi)[0] <= posVagueG:
+    #     #         posVagueG = self.canvas.coords(ennemi)[0]
+    #     #     if self.canvas.coords(ennemi)[0] >= posVagueD:
+    #     #         posVagueD=self.canvas.coords(ennemi)[0]
+
+    #     posVagueD = self.canvas.coords(listeEnnemi[1:][-1])[0]
+    #     posVagueG = self.canvas.coords(listeEnnemi[1:][0])[0]
                 
-        return(posVagueG, posVagueD)
+    #     return(posVagueG, posVagueD)
     
     
     
     def mvtBonus(self,bonus):
         self.canvas.move(self.ennemiBonus,10,0)
-        if self.canvas.coords(bonus)[0] >= 1920:
+        if self.canvas.coords(bonus)[0] >= 3000:
             self.canvas.coords(bonus,0,100)
-        self.master.after(20,self.mvtBonus,self.ennemiBonus)
+        self.master.after(15,self.mvtBonus,self.ennemiBonus)
       
     
     #Méthode qui permet de déplacer la vague d'ennemis
@@ -346,28 +349,30 @@ class Ennemi():
              
             self.canvas.move(ennemi, x, y)
             self.collision()
-            posVagueG, posVagueD = self.positionVague()
+            posVagueD = self.canvas.coords(listeEnnemi[1:][-1])[0]
+            posVagueG = self.canvas.coords(listeEnnemi[1:][0])[0]
             
             if posVagueD >= limiteD:
+                print("<<<<<limite droite atteinte>>>>>")
                 for ennemi in listeEnnemi[1:]:
-                    self.canvas.move(ennemi,0,5)
+                    self.canvas.move(ennemi,-10,10)
                     self.collision()
-                
-                x = -x  
-            
-            if posVagueG <= limiteG:
-                for ennemi in listeEnnemi[1:]:
-                    self.canvas.move(ennemi,0,5)
-                    self.collision()
-                
                 x = -x
-        
+                
+            if posVagueG <= limiteG:
+                print("<<<<<limite gauche atteinte>>>>>")
+                for ennemi in listeEnnemi[1:]:
+                    self.canvas.move(ennemi,10,10)
+                    self.collision()
+                    
+                x = -x
+
         self.master.after(30, self.mouvement, x, y)
+        
     """
-    Quand un ennemi meurt, les autres arrêtent de bouger (essayer double héritage)
-    Les ennemis se superposent
+    Quand un ennemi meurt, les autres arrêtent de bouger (problème du mouvement quand nombre d'ennemi pair)
+    Les ennemis se superposent           
     File et pile (trouver ou les mettre, idée : l'utiliser pour la fréq d'apparition de l'ennemi bonus)
-    sélection double vaisseau (message ne s'affiche pas sur linux)
     bonnes pratiques
     dossier final
     """
@@ -432,6 +437,7 @@ class Ennemi():
             if abs(self.canvas.coords(ennemi)[0] - self.canvas.coords(self.pion)[0]) < limit and abs(self.canvas.coords(ennemi)[1] - self.canvas.coords(self.pion)[1]) < limit:
                 self.canvas.delete(self.pion)
                 self.canvas.delete(ennemi)
+                listeEnnemi[1:].remove(ennemi)
                 messagebox.showinfo("INFORMATION", 
                                     "Vous avez perdu")
 
@@ -448,7 +454,7 @@ class Ennemi():
             
 # ----------------------------------------------------------------------------                    
 # Page de jeu
-class PageJeu(ComportementFenetre, Ennemi):
+class PageJeu(ComportementFenetre):
     
     def __init__(self, master, type_vaisseau):
         
@@ -512,8 +518,8 @@ class PageJeu(ComportementFenetre, Ennemi):
                                borderwidth = 3,
                                command = self.quitter)
         
-        self.btnMenu.place(x = 1250,y = 30)
-        self.btnQuitter.place(x = 1400,y = 30)
+        self.btnMenu.place(x = 1300,y = 0)
+        self.btnQuitter.place(x = 1442,y = 0)
 
         
         self.score = 0
@@ -522,7 +528,7 @@ class PageJeu(ComportementFenetre, Ennemi):
                          font = ("Matura MT Script Capitals", 25),
                          bg = "black", 
                          fg = "white")
-        self.myScore.place(x = 50,y = 30)
+        self.myScore.place(x = 0,y = 50)
         
         self.master.bind("<Right>", self.moveRight)
         self.master.bind("<Left>", self.moveLeft)
@@ -581,6 +587,7 @@ class PageJeu(ComportementFenetre, Ennemi):
                     for ennemi in listeEnnemi[1:]:
                         if elem == ennemi:
                             self.canvas.delete(ennemi)
+                            listeEnnemi.remove(ennemi)
                             self.canvas.delete(self.balle)
                             self.score += 20
                             self.myScore.config(text="Score : "+str(self.score))
@@ -622,25 +629,25 @@ class PageJeu(ComportementFenetre, Ennemi):
 
         
         #bloc 2
-        for i in range(1,8):
-            self.b2 = self.canvas.create_rectangle(630+i*30,640, #ligne 1
-                                         660+i*30,670,
-                                         outline = "black",
-                                         fill = "brown",
-                                         tags = "mur")
-            listeIlots.append(self.b2)
-            self.b2 = self.canvas.create_rectangle(630+i*30,610, #ligne 2
-                                         660+i*30,640,
-                                         outline = "black",
-                                         fill = "brown",
-                                         tags = "mur")
-            listeIlots.append(self.b2)
-            self.b2 = self.canvas.create_rectangle(630+i*30,580, #ligne 3
-                                         660+i*30,610,
-                                         outline = "black",
-                                         fill = "brown",
-                                         tags = "mur")
-            listeIlots.append(self.b2)
+        # for i in range(1,8):
+        #     self.b2 = self.canvas.create_rectangle(630+i*30,640, #ligne 1
+        #                                  660+i*30,670,
+        #                                  outline = "black",
+        #                                  fill = "brown",
+        #                                  tags = "mur")
+        #     listeIlots.append(self.b2)
+        #     self.b2 = self.canvas.create_rectangle(630+i*30,610, #ligne 2
+        #                                  660+i*30,640,
+        #                                  outline = "black",
+        #                                  fill = "brown",
+        #                                  tags = "mur")
+        #     listeIlots.append(self.b2)
+        #     self.b2 = self.canvas.create_rectangle(630+i*30,580, #ligne 3
+        #                                  660+i*30,610,
+        #                                  outline = "black",
+        #                                  fill = "brown",
+        #                                  tags = "mur")
+        #     listeIlots.append(self.b2)
         
         #bloc 3
         for i in range(1,8):
