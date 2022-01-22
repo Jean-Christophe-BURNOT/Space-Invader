@@ -278,6 +278,10 @@ class Ennemi():
         listeEnnemi = []
         
         self.listeTirsEnnemis = []
+        #cree une pile et une file
+        self.pile = self.generateurListe(1)
+        self.file = self.generateurListe(2)
+        
         self.ennemis()
         
         self.vie = 1000
@@ -288,6 +292,7 @@ class Ennemi():
                            fg = "white")
         
         self.myVie.place(x = 0,y = 0)
+        #appelle la methode qui génère une liste pour randomiser la fréquence d'apparition de l'ennemi bonus
         
         
 
@@ -295,47 +300,61 @@ class Ennemi():
         self.enBonus = PhotoImage(file = "Images/alien1.png", master = self.master).subsample(4)
         self.ennemiBonus = self.canvas.create_image(0,100,image = self.enBonus)
         listeEnnemi.append(self.ennemiBonus)
+        
+        #appelle la fonction qui permet le déplacement de l'ennemi
         self.mvtBonus(self.ennemiBonus)
+        
+       
         
         self.ennemi2 = PhotoImage(file = "Images/alien2.png", master = self.master).subsample(3)
         
         
-        for i in range(1,5) :
+        for i in range(1,6):
             self.en = self.canvas.create_image(0+i*130,165,image = self.ennemi2)
             listeEnnemi.append(self.en)
             
         #fais les appels adéquats pour les methodes     
         self.mouvement(10, 0)
         self.shootEnnemis()
-            
-        
-        
-        
-        
-        
-        
-    #Méthode qui prend les ennemis générés 
-    #et calcule l'extrémité de notre vague d'ennemi       
-    # def positionVague(self):
-    #     # posVagueD = 0
-    #     # posVagueG = self.master.winfo_screenwidth()
-    #     # for ennemi in listeEnnemi[1:]:
-    #     #     if self.canvas.coords(ennemi)[0] <= posVagueG:
-    #     #         posVagueG = self.canvas.coords(ennemi)[0]
-    #     #     if self.canvas.coords(ennemi)[0] >= posVagueD:
-    #     #         posVagueD=self.canvas.coords(ennemi)[0]
 
-    #     posVagueD = self.canvas.coords(listeEnnemi[1:][-1])[0]
-    #     posVagueG = self.canvas.coords(listeEnnemi[1:][0])[0]
-                
-    #     return(posVagueG, posVagueD)
+    """
+    fonction qui génère aléatoirement des liste
+    avec des valeurs adéquates pour que les fonction qui suivent
+    puissent les utiliser comme des piles ou des files
+    """
+    def generateurListe(self,selecteur):
+        if selecteur==1:
+            liste1=[]
+            for i in range(3):
+                i=random.randint(3000,20000)
+                liste1.append(i)
+            return liste1
+        elif selecteur==2:
+            liste2=[]
+            for i in range(3):
+                i=random.randint(10,60)
+                liste2.append(i)
+            return liste2
     
     
     
-    def mvtBonus(self,bonus):
-        self.canvas.move(self.ennemiBonus,10,0)
-        if self.canvas.coords(bonus)[0] >= 3000:
+    
+    
+    def mvtBonus(self, bonus):
+        
+        if self.file==[]:
+            self.file=self.generateurListe(2)
+        self.canvas.move(self.ennemiBonus,self.file[0],0)
+        
+        if self.pile==[]:
+            self.pile=self.generateurListe(1)
+            
+            
+        if self.canvas.coords(bonus)[0] >= self.pile[-1]:
+            
             self.canvas.coords(bonus,0,100)
+            self.pile = self.pile[:-1]
+            self.file= self.file[1:]
         self.master.after(15,self.mvtBonus,self.ennemiBonus)
       
     
@@ -344,35 +363,27 @@ class Ennemi():
         # valeurs limite de l'écran
         limiteD = self.master.winfo_screenwidth()
         limiteG = 0
-        
         for ennemi in listeEnnemi[1:]:
-             
             self.canvas.move(ennemi, x, y)
             self.collision()
             posVagueD = self.canvas.coords(listeEnnemi[1:][-1])[0]
             posVagueG = self.canvas.coords(listeEnnemi[1:][0])[0]
-            
             if posVagueD >= limiteD:
-                print("<<<<<limite droite atteinte>>>>>")
+                #print("<<<<<limite droite atteinte>>>>>")
                 for ennemi in listeEnnemi[1:]:
                     self.canvas.move(ennemi,-10,10)
                     self.collision()
                 x = -x
-                
             if posVagueG <= limiteG:
-                print("<<<<<limite gauche atteinte>>>>>")
+                #print("<<<<<limite gauche atteinte>>>>>")
                 for ennemi in listeEnnemi[1:]:
                     self.canvas.move(ennemi,10,10)
                     self.collision()
-                    
                 x = -x
-
         self.master.after(30, self.mouvement, x, y)
         
-    """
-    Quand un ennemi meurt, les autres arrêtent de bouger (problème du mouvement quand nombre d'ennemi pair)
-    Les ennemis se superposent           
-    File et pile (trouver ou les mettre, idée : l'utiliser pour la fréq d'apparition de l'ennemi bonus)
+    """          
+    
     bonnes pratiques
     dossier final
     """
@@ -387,7 +398,7 @@ class Ennemi():
                 self.listeTirsEnnemis.append(self.balleEn)
     
                 self.mvtBalleEnnemis(self.balleEn) 
-        self.canvas.after(100,self.shootEnnemis)
+        self.canvas.after(300,self.shootEnnemis)
             
             
             
@@ -628,28 +639,28 @@ class PageJeu(ComportementFenetre):
             listeIlots.append(self.b1)
 
         
-        #bloc 2
-        # for i in range(1,8):
-        #     self.b2 = self.canvas.create_rectangle(630+i*30,640, #ligne 1
-        #                                  660+i*30,670,
-        #                                  outline = "black",
-        #                                  fill = "brown",
-        #                                  tags = "mur")
-        #     listeIlots.append(self.b2)
-        #     self.b2 = self.canvas.create_rectangle(630+i*30,610, #ligne 2
-        #                                  660+i*30,640,
-        #                                  outline = "black",
-        #                                  fill = "brown",
-        #                                  tags = "mur")
-        #     listeIlots.append(self.b2)
-        #     self.b2 = self.canvas.create_rectangle(630+i*30,580, #ligne 3
-        #                                  660+i*30,610,
-        #                                  outline = "black",
-        #                                  fill = "brown",
-        #                                  tags = "mur")
-        #     listeIlots.append(self.b2)
+        # bloc 2
+        for i in range(1,8):
+            self.b2 = self.canvas.create_rectangle(630+i*30,640, #ligne 1
+                                          660+i*30,670,
+                                          outline = "black",
+                                          fill = "brown",
+                                          tags = "mur")
+            listeIlots.append(self.b2)
+            self.b2 = self.canvas.create_rectangle(630+i*30,610, #ligne 2
+                                          660+i*30,640,
+                                          outline = "black",
+                                          fill = "brown",
+                                          tags = "mur")
+            listeIlots.append(self.b2)
+            self.b2 = self.canvas.create_rectangle(630+i*30,580, #ligne 3
+                                          660+i*30,610,
+                                          outline = "black",
+                                          fill = "brown",
+                                          tags = "mur")
+            listeIlots.append(self.b2)
         
-        #bloc 3
+        # bloc 3
         for i in range(1,8):
             self.b3 = self.canvas.create_rectangle(1090+i*30,640, #ligne 1
                                          1120+i*30,670,
