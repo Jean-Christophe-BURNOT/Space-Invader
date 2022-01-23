@@ -32,7 +32,7 @@ On peut citer comme exemple "listeEnnemi". Elle contient tous objets du canvas q
 __________
 
 Ce programme possède une implémentation de file:
-Elle se trouve dans la méthode mvtBonus et gère la vitesse aléatoire de notre vaisseau bonus. Avant d'appeller cette méthode, on génère aléatoirement une liste de 3 valeurs par l'appel de la fonction generateurListe avec la variable selecteur à 2, ces 3 termes sont entre 10 et 60. Cette valeur entre 10 et 60 représente la vitesse de notre vaisseaux bonus. Le vaisseau va prendre la première des valeurs (l'indice 0), il va aller à la vitesse qu'elle contient puis rappeller la fonction avec la même liste mais sans le premier terme. Quand la file arrive à 0 (liste vide) on rappelle la fonction generateurListe avec le selacteur à 2 pour regénérer 3 nouvelles valeurs.
+Elle se trouve dans la méthode mvtBonus et gère la vitesse aléatoire de notre vaisseau bonus. Avant d'appeller cette méthode, on génère aléatoirement une liste de 3 valeurs par l'appel de la fonction generateurListe avec la variable selecteur à 2, ces 3 termes sont entre 10 et 15. Cette valeur entre 10 et 15 représente la vitesse de notre vaisseaux bonus. Le vaisseau va prendre la première des valeurs (l'indice 0), il va aller à la vitesse qu'elle contient puis rappeller la fonction avec la même liste mais sans le premier terme. Quand la file arrive à 0 (liste vide) on rappelle la fonction generateurListe avec le selacteur à 2 pour regénérer 3 nouvelles valeurs.
 
 
 __________
